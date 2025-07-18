@@ -1,0 +1,21 @@
+[package]
+name = "chip8-emulator"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+emulator-core.workspace = true
+serde.workspace = true
+anyhow.workspace = true
+log.workspace = true
+
+[workspace]
+resolver = "2"
+members = ["emulator-core"]
+
+[workspace.dependencies]
+emulator-core.path = "./emulator-core"
+
+serde = { version = "1.0.219", features = ["derive"] }
+anyhow = "1.0.98"
+log = "0.4.27"
