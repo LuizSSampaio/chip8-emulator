@@ -14,7 +14,7 @@ resolver = "2"
 members = ["emulator-core"]
 
 [workspace.dependencies]
-emulator-core.path = "./emulator-core"
+emulator-core = { path = "emulator-core" }
 
 serde = { version = "1.0.219", features = ["derive"] }
 anyhow = "1.0.98"
