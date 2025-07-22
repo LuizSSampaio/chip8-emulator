@@ -66,6 +66,7 @@ impl Emulator {
 
     pub fn tick(&mut self) {
         let op = self.fetch();
+        self.execute(op);
     }
 
     fn fetch(&mut self) -> u16 {
@@ -86,6 +87,34 @@ impl Emulator {
                 // TODO: BEEP
             }
             self.st -= 1;
+        }
+    }
+
+    fn execute(&mut self, op: u16) {
+        let digit1 = (op & 0xF000) >> 12;
+        let digit2 = (op & 0x0F00) >> 8;
+        let digit3 = (op & 0x00F0) >> 4;
+        let digit4 = op & 0x000F;
+
+        match (digit1, digit2, digit3, digit4) {
+            // NOP
+            (0, 0, 0, 0) => {}
+            // CLS
+            (0, 0, 0xE, 0) => self.screen = [false; SCREEN_WIDTH * SCREEN_HEIGHT],
+            // RET
+            (0, 0, 0xE, 0xE) => {
+                let ret_addr = self.pop();
+                self.pc = ret_addr;
+            }
+            // JMP NNN
+            (1, _, _, _) => self.pc = op & 0xFFF,
+            // CALL NNN
+            (2, _, _, _) => {
+                let nnn = op & 0xFFF;
+                self.push(self.pc);
+                self.pc = nnn;
+            }
+            (_, _, _, _) => unimplemented!("Unimplemented opcode: {}", op),
         }
     }
 }
