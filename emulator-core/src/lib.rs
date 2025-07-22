@@ -6,6 +6,8 @@ const NUM_REGS: usize = 16;
 const NUM_KEYS: usize = 16;
 const START_ADDR: u16 = 0x200;
 
+mod font;
+
 #[derive(Debug, Clone)]
 pub struct Emulator {
     pc: u16,
@@ -22,7 +24,7 @@ pub struct Emulator {
 
 impl Emulator {
     pub fn new() -> Self {
-        Self {
+        let mut emulator = Self {
             pc: START_ADDR,
             ram: [0; RAM_SIZE],
             screen: [false; SCREEN_WIDTH * SCREEN_HEIGHT],
@@ -33,7 +35,33 @@ impl Emulator {
             keys: [false; NUM_KEYS],
             dt: 0,
             st: 0,
-        }
+        };
+        emulator.ram[..font::FONTSET_SIZE].copy_from_slice(&font::FONTSET);
+        emulator
+    }
+
+    pub fn reset(&mut self) {
+        self.pc = START_ADDR;
+        self.ram = [0; RAM_SIZE];
+        self.screen = [false; SCREEN_WIDTH * SCREEN_HEIGHT];
+        self.v_reg = [0; NUM_REGS];
+        self.i_reg = 0;
+        self.sp = 0;
+        self.stack = [0; STACK_SIZE];
+        self.keys = [false; NUM_KEYS];
+        self.dt = 0;
+        self.st = 0;
+        self.ram[..font::FONTSET_SIZE].copy_from_slice(&font::FONTSET);
+    }
+
+    fn push(&mut self, value: u16) {
+        self.stack[self.sp as usize] = value;
+        self.sp += 1;
+    }
+
+    fn pop(&mut self) -> u16 {
+        self.sp -= 1;
+        self.stack[self.sp as usize]
     }
 }
 
@@ -42,3 +70,4 @@ impl Default for Emulator {
         Self::new()
     }
 }
+
