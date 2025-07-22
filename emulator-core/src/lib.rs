@@ -63,6 +63,31 @@ impl Emulator {
         self.sp -= 1;
         self.stack[self.sp as usize]
     }
+
+    pub fn tick(&mut self) {
+        let op = self.fetch();
+    }
+
+    fn fetch(&mut self) -> u16 {
+        let higher_byte = self.ram[self.pc as usize] as u16;
+        let lower_byte = self.ram[(self.pc + 1) as usize] as u16;
+        self.pc += 2;
+
+        (higher_byte << 8) | lower_byte
+    }
+
+    pub fn tick_timers(&mut self) {
+        if self.dt > 0 {
+            self.dt -= 1;
+        }
+
+        if self.st > 0 {
+            if self.st == 0 {
+                // TODO: BEEP
+            }
+            self.st -= 1;
+        }
+    }
 }
 
 impl Default for Emulator {
