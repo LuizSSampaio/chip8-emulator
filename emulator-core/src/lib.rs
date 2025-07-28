@@ -42,6 +42,12 @@ impl Emulator {
         emulator
     }
 
+    pub fn load(&mut self, data: &[u8]) {
+        let start = START_ADDR as usize;
+        let end = (START_ADDR as usize) + data.len();
+        self.ram[start..end].copy_from_slice(data);
+    }
+
     pub fn reset(&mut self) {
         self.pc = START_ADDR;
         self.ram = [0; RAM_SIZE];
@@ -54,6 +60,14 @@ impl Emulator {
         self.dt = 0;
         self.st = 0;
         self.ram[..font::FONTSET_SIZE].copy_from_slice(&font::FONTSET);
+    }
+
+    pub fn get_display(&self) -> &[bool] {
+        &self.screen
+    }
+
+    pub fn keypress(&mut self, idx: usize, pressed: bool) {
+        self.keys[idx] = pressed;
     }
 
     fn push(&mut self, value: u16) {
